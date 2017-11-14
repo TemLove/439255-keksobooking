@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Любовь Темнова](https://up.htmlacademy.ru/javascript/11/user/439255).
-* Наставник: `Неизвестно`.
+* Наставник: [Игорь Антонов](https://up.htmlacademy.ru/javascript/11/user/3162).
 
 ---
 
