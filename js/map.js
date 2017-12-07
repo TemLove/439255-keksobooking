@@ -28,13 +28,26 @@ var PIN_WIDTH = 10;
 var PIN_HEIGHT = 18;
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
-
+var MIN_PRICES_BY_APARTMENT_TYPES = {
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 1e4
+};
 var mapElement = document.querySelector('.map');
 var mapPinsListElement = mapElement.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var mapCardTemplate = document.querySelector('template').content.querySelector('article.map__card');
 var noticeFormElement = document.querySelector('.notice__form');
 var noticeFormFieldsetElements = noticeFormElement.querySelectorAll('fieldset');
+var addressInputElement = noticeFormElement.querySelector('#address');
+var checkInSelectElement = noticeFormElement.querySelector('#timein');
+var checkOutSelectElement = noticeFormElement.querySelector('#timeout');
+var typeSelectElement = noticeFormElement.querySelector('#type');
+var priceInputElement = noticeFormElement.querySelector('#price');
+var roomNumberSelectElement = noticeFormElement.querySelector('#room_number');
+var capacitySelectElement = noticeFormElement.querySelector('#capacity');
+var capacityOptionElements = Array.prototype.slice.call(capacitySelectElement.options).reverse();
 var mapPinMainElement = mapElement.querySelector('.map__pin--main');
 var mapPinElements;
 var posters;
@@ -230,7 +243,7 @@ var activateMap = function () {
     setListeners(mapPinElements[i], 'add', ['click', 'keydown'], [mapPinClickHandler, mapPinEnterPressHandler]);
   }
   Array.prototype.forEach.call(noticeFormFieldsetElements, function (fieldset) {
-    fieldset.removeAttribute('disabled');
+    fieldset.disabled = false;
   });
 };
 
@@ -267,5 +280,52 @@ var popupCloseBtnEnterPressHandler = getKeydownHandler(ENTER_KEYCODE, closePopup
 var mapPinMainMouseupHandler = getClickHandler(activateMap);
 mapPinMainElement.addEventListener('mouseup', mapPinMainMouseupHandler);
 Array.prototype.forEach.call(noticeFormFieldsetElements, function (fieldset) {
-  fieldset.setAttribute('disabled', 'disabled');
+  fieldset.disabled = true;
 });
+
+var formBlurHandle = function (evt) {
+  if (evt.target === checkInSelectElement || evt.target === checkOutSelectElement) {
+    var firstSelect = evt.target;
+    var secondSelect = firstSelect === checkInSelectElement ? checkOutSelectElement : checkInSelectElement;
+    var index = Array.prototype.findIndex.call(firstSelect.options, function (option) {
+      return option.selected;
+    });
+    secondSelect.options[index].selected = true;
+  }
+  if (evt.target === typeSelectElement) {
+    var selectedOption = Array.prototype.find.call(typeSelectElement.options, function (option) {
+      return option.selected;
+    });
+    priceInputElement.min = MIN_PRICES_BY_APARTMENT_TYPES[selectedOption.value];
+    priceInputElement.placeholder = priceInputElement.min;
+  }
+  if (evt.target === roomNumberSelectElement) {
+    var selectedOptionValue = Array.prototype.find.call(roomNumberSelectElement.options, function (option) {
+      return option.selected;
+    }).value;
+    capacityOptionElements.forEach(function (option) {
+      option.disabled = true;
+    });
+    if (selectedOptionValue === '100') {
+      capacitySelectElement.options[3].disabled = false;
+      capacitySelectElement.options[3].selected = true;
+    } else {
+      var capacityOptions = capacityOptionElements.slice(1);
+      capacityOptions.length = +selectedOptionValue;
+      capacityOptions.forEach(function (option) {
+        option.disabled = false;
+      });
+      capacityOptions[0].selected = true;
+    }
+  }
+};
+
+var setAddress = function () {
+  var MAIN_PIN_Y_OFFSET = 16;
+  var locationX = parseInt(getComputedStyle(mapPinMainElement).getPropertyValue('left'), 10);
+  var locationY = parseInt(getComputedStyle(mapPinMainElement).getPropertyValue('top'), 10) - MAIN_PIN_Y_OFFSET;
+  addressInputElement.value = locationX + ', ' + locationY;
+};
+
+setAddress();
+noticeFormElement.addEventListener('blur', formBlurHandle, true);
