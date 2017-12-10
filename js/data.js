@@ -19,59 +19,34 @@
   var X_POINT_MAX = 900;
   var Y_POINT_MIN = 100;
   var Y_POINT_MAX = 500;
-  var getRandomNumber = function (max, min) {
-    min = min || 0;
-    return Math.floor(Math.random() * (max - min) + min);
-  };
-
-  var getRandomElement = function (arr) {
-    return arr[getRandomNumber(arr.length)];
-  };
-
-  var getUniqueRandomElement = function (arr) {
-    return arr.splice(getRandomNumber(arr.length), 1).join('');
-  };
-
-  var getRandomizedArray = function (source, length) {
-    length = length || source.length;
-    var arr = source.slice();
-    var result = [];
-    while (length-- > 0) {
-      if (!arr.length) {
-        arr = source.slice();
-      }
-      result.push(getUniqueRandomElement(arr));
-    }
-    return result;
-  };
 
   var getPosters = function (amount) {
     var posters = [];
-    var avatarNumbers = getRandomizedArray(AVATAR_NUMBERS, amount);
-    var offerTitles = getRandomizedArray(OFFER_TITLES, amount);
+    var avatarNumbers = window.util.getRandomizedArray(AVATAR_NUMBERS, amount);
+    var offerTitles = window.util.getRandomizedArray(OFFER_TITLES, amount);
     var RandomPoster = function () {
       var poster = this;
       this.author = {
-        avatar: 'img/avatars/user' + getUniqueRandomElement(avatarNumbers) + '.png'
+        avatar: 'img/avatars/user' + window.util.getUniqueRandomElement(avatarNumbers) + '.png'
       };
       this.offer = {
-        title: getUniqueRandomElement(offerTitles),
+        title: window.util.getUniqueRandomElement(offerTitles),
         get address() {
           return poster.location.x + ', ' + poster.location.y;
         },
-        price: getRandomNumber(MAX_PRICE, MIN_PRICE),
-        type: getRandomElement(APARTMENT_TYPE),
-        rooms: getRandomNumber(ROOMS_MAX_VALUE, ROOMS_MIN_VALUE),
-        guests: getRandomNumber(GUESTS_MAX_VALUE),
-        checkin: getRandomElement(CHECKIN_TIMES),
-        checkout: getRandomElement(CHECKOUT_TIMES),
-        features: getRandomizedArray(OFFER_FEATURES, getRandomNumber(OFFER_FEATURES.length)),
+        price: window.util.getRandomNumber(MAX_PRICE, MIN_PRICE),
+        type: window.util.getRandomElement(APARTMENT_TYPE),
+        rooms: window.util.getRandomNumber(ROOMS_MAX_VALUE, ROOMS_MIN_VALUE),
+        guests: window.util.getRandomNumber(GUESTS_MAX_VALUE),
+        checkin: window.util.getRandomElement(CHECKIN_TIMES),
+        checkout: window.util.getRandomElement(CHECKOUT_TIMES),
+        features: window.util.getRandomizedArray(OFFER_FEATURES, window.util.getRandomNumber(OFFER_FEATURES.length)),
         description: [],
         photos: []
       };
       this.location = {
-        x: getRandomNumber(X_POINT_MAX + 1, X_POINT_MIN),
-        y: getRandomNumber(Y_POINT_MAX + 1, Y_POINT_MIN)
+        x: window.util.getRandomNumber(X_POINT_MAX + 1, X_POINT_MIN),
+        y: window.util.getRandomNumber(Y_POINT_MAX + 1, Y_POINT_MIN)
       };
     };
 
