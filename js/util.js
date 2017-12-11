@@ -1,6 +1,32 @@
 'use strict';
 
 (function () {
+  var getRandomNumber = function (max, min) {
+    min = min || 0;
+    return Math.floor(Math.random() * (max - min) + min);
+  };
+
+  var getRandomElement = function (arr) {
+    return arr[getRandomNumber(arr.length)];
+  };
+
+  var getUniqueRandomElement = function (arr) {
+    return arr.splice(getRandomNumber(arr.length), 1).join('');
+  };
+
+  var getRandomizedArray = function (source, length) {
+    length = length || source.length;
+    var arr = source.slice();
+    var result = [];
+    while (length-- > 0) {
+      if (!arr.length) {
+        arr = source.slice();
+      }
+      result.push(getUniqueRandomElement(arr));
+    }
+    return result;
+  };
+
   var getFragment = function (data, renderMethod) {
     data = Array.isArray(data) ? data : [data];
     var fragment = document.createDocumentFragment();
@@ -45,6 +71,10 @@
     return result;
   };
   window.util = {
+    getRandomNumber: getRandomNumber,
+    getRandomElement: getRandomElement,
+    getUniqueRandomElement: getUniqueRandomElement,
+    getRandomizedArray: getRandomizedArray,
     getFragment: getFragment,
     setListeners: setListeners,
     getClickHandler: getClickHandler,

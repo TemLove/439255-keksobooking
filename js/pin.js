@@ -1,24 +1,24 @@
 'use strict';
 
 (function () {
-  var MAP_PIN_HEIGHT = 44;
-  var PIN_WIDTH = 10;
-  var PIN_HEIGHT = 18;
+  var mapPin = {
+    MAP_PIN_HEIGHT: 44,
+    PIN_WIDTH: 10,
+    PIN_HEIGHT: 18
+  };
   var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
-  var renderMapPin = function (mapPin) {
+  var renderMapPin = function (pin) {
     var mapPinElement = mapPinTemplate.cloneNode(true);
     var mapPinImgElement = mapPinElement.querySelector('img');
-    var offsetX = PIN_WIDTH / 2;
-    var offsetY = MAP_PIN_HEIGHT / 2 + PIN_HEIGHT;
-    var style = 'left: ' + (mapPin.location.x - offsetX) + 'px; top: ' + (mapPin.location.y - offsetY) + 'px;';
+    var offsetX = mapPin.PIN_WIDTH / 2;
+    var offsetY = mapPin.MAP_PIN_HEIGHT / 2 + mapPin.PIN_HEIGHT;
+    var style = 'left: ' + (pin.location.x - offsetX) + 'px; top: ' + (pin.location.y - offsetY) + 'px;';
     mapPinElement.setAttribute('style', style);
-    mapPinImgElement.setAttribute('src', mapPin.author.avatar);
+    mapPinImgElement.setAttribute('src', pin.author.avatar);
     return mapPinElement;
   };
   window.pin = {
-    MAP_PIN_HEIGHT: MAP_PIN_HEIGHT,
-    PIN_WIDTH: PIN_WIDTH,
-    PIN_HEIGHT: PIN_HEIGHT,
+    mapPin: mapPin,
     renderMapPin: renderMapPin
   };
 })();

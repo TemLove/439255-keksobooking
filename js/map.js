@@ -3,6 +3,7 @@
 (function () {
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
+  var MAIN_PIN_Y_OFFSET = 16;
   var mapElement = document.querySelector('.map');
   var mapPinsListElement = mapElement.querySelector('.map__pins');
   var mapPinMainElement = mapElement.querySelector('.map__pin--main');
@@ -10,7 +11,6 @@
   var noticeFormFieldsetElements = window.form.noticeFormElement.querySelectorAll('fieldset');
   var posters;
   var setAddress = function () {
-    var MAIN_PIN_Y_OFFSET = 16;
     var locationX = parseInt(getComputedStyle(mapPinMainElement).getPropertyValue('left'), 10);
     var locationY = parseInt(getComputedStyle(mapPinMainElement).getPropertyValue('top'), 10) - MAIN_PIN_Y_OFFSET;
     addressInputElement.value = locationX + ', ' + locationY;
@@ -18,8 +18,8 @@
 
   var openPopup = function (mapPinElement) {
     var style = window.util.getProperties(mapPinElement.getAttribute('style'));
-    var condition1 = parseInt(style.left, 10) + window.pin.PIN_WIDTH / 2;
-    var condition2 = parseInt(style.top, 10) + window.pin.MAP_PIN_HEIGHT / 2 + window.pin.PIN_HEIGHT;
+    var condition1 = parseInt(style.left, 10) + window.pin.mapPin.PIN_WIDTH / 2;
+    var condition2 = parseInt(style.top, 10) + window.pin.mapPin.MAP_PIN_HEIGHT / 2 + window.pin.mapPin.PIN_HEIGHT;
     for (var i = 0; i < posters.length; i++) {
       if (posters[i].location.x === condition1 && posters[i].location.y === condition2) {
         var cardFragment = window.util.getFragment(posters[i], window.card.renderMapCard);
@@ -89,9 +89,55 @@
     });
   };
 
-  var mapPinMainMouseupHandler = window.util.getClickHandler(activateMap);
-  mapPinMainElement.addEventListener('mouseup', mapPinMainMouseupHandler);
-  setAddress();
+  var mouseDownHandler = function (evt) {
+    evt.preventDefault();
+
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var mouseMoveHandler = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      var pinCoords = {
+        x: (mapPinMainElement.offsetLeft - shift.x),
+        y: (mapPinMainElement.offsetTop - shift.y)
+      };
+      if (pinCoords.y < 100 + MAIN_PIN_Y_OFFSET) {
+        pinCoords.y = 100 + MAIN_PIN_Y_OFFSET;
+      }
+      if (pinCoords.y > 500 + MAIN_PIN_Y_OFFSET) {
+        pinCoords.y = 500 + MAIN_PIN_Y_OFFSET;
+      }
+
+      mapPinMainElement.style.top = pinCoords.y + 'px';
+      mapPinMainElement.style.left = pinCoords.x + 'px';
+      setAddress();
+    };
+    var mouseUpHandler = function (upEvt) {
+      upEvt.preventDefault();
+      activateMap();
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
+    };
+
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
+  };
+
+  mapPinMainElement.addEventListener('mousedown', mouseDownHandler);
+
   Array.prototype.forEach.call(noticeFormFieldsetElements, function (fieldset) {
     fieldset.disabled = true;
   });
