@@ -73,8 +73,11 @@
       setGuestOptions();
     }
   };
+  setMinPrice();
+  setGuestOptions();
   noticeFormElement.addEventListener('change', formChangeHandler, true);
   window.form = {
     noticeFormElement: noticeFormElement
   };
+
 })();

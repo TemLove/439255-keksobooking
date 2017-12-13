@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var ESC_KEYCODE = 27;
+  var ENTER_KEYCODE = 13;
   var getRandomNumber = function (max, min) {
     min = min || 0;
     return Math.floor(Math.random() * (max - min) + min);
@@ -71,6 +73,8 @@
     return result;
   };
   window.util = {
+    ESC_KEYCODE: ESC_KEYCODE,
+    ENTER_KEYCODE: ENTER_KEYCODE,
     getRandomNumber: getRandomNumber,
     getRandomElement: getRandomElement,
     getUniqueRandomElement: getUniqueRandomElement,
