@@ -72,6 +72,39 @@
     });
     return result;
   };
+  var findSelectedOption = function (select) {
+    var selectedOption = null;
+    for (var i = 0; i < select.options.length; i++) {
+      if (select.options[i].selected) {
+        selectedOption = select.options[i];
+        break;
+      }
+    }
+    return selectedOption;
+  };
+  var syncValues = function (element, value) {
+    element.value = value;
+  };
+  var syncValueWithMin = function (element, value) {
+    element.min = value;
+    element.placeholder = element.min;
+  };
+  var syncMultipleValues = function (element, values) {
+    var options = Array.prototype.slice.call(element.options, 0);
+    options.forEach(function (option) {
+      if (values.indexOf(option.value) >= 0) {
+        option.disabled = false;
+      } else {
+        option.disabled = true;
+      }
+    });
+    for (var i = 0; i < options.length; i++) {
+      if (values.indexOf(options[i].value) >= 0) {
+        options[i].selected = true;
+        break;
+      }
+    }
+  };
   window.util = {
     ESC_KEYCODE: ESC_KEYCODE,
     ENTER_KEYCODE: ENTER_KEYCODE,
@@ -83,6 +116,10 @@
     setListeners: setListeners,
     getClickHandler: getClickHandler,
     getKeydownHandler: getKeydownHandler,
-    getProperties: getProperties
+    getProperties: getProperties,
+    findSelectedOption: findSelectedOption,
+    syncValues: syncValues,
+    syncValueWithMin: syncValueWithMin,
+    syncMultipleValues: syncMultipleValues
   };
 })();
