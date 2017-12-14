@@ -15,10 +15,12 @@
   var CHECKIN_TIMES = ['12:00', '13:00', '14:00'];
   var CHECKOUT_TIMES = ['12:00', '13:00', '14:00'];
   var OFFER_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-  var X_POINT_MIN = 300;
-  var X_POINT_MAX = 900;
-  var Y_POINT_MIN = 100;
-  var Y_POINT_MAX = 500;
+  var Coords = {
+    X_POINT_MIN: 300,
+    X_POINT_MAX: 900,
+    Y_POINT_MIN: 100,
+    Y_POINT_MAX: 500
+  };
 
   var getPosters = function (amount) {
     var posters = [];
@@ -45,8 +47,8 @@
         photos: []
       };
       this.location = {
-        x: window.util.getRandomNumber(X_POINT_MAX + 1, X_POINT_MIN),
-        y: window.util.getRandomNumber(Y_POINT_MAX + 1, Y_POINT_MIN)
+        x: window.util.getRandomNumber(Coords.X_POINT_MAX + 1, Coords.X_POINT_MIN),
+        y: window.util.getRandomNumber(Coords.Y_POINT_MAX + 1, Coords.Y_POINT_MIN)
       };
     };
 
@@ -56,6 +58,7 @@
     return posters;
   };
   window.data = {
-    getPosters: getPosters
+    getPosters: getPosters,
+    Coords: Coords
   };
 })();
