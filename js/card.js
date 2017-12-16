@@ -26,6 +26,7 @@
     var mapApartmentTypeElement = mapCardElement.querySelector('h4');
     var mapCardParagraphElements = mapCardElement.querySelectorAll('p');
     var mapCardFeaturesElement = mapCardElement.querySelector('.popup__features');
+    var mapCardPicturesElement = mapCardElement.querySelector('.popup__pictures');
     mapCardAvatarElement.setAttribute('src', card.author.avatar);
     mapCardTitleElement.textContent = card.offer.title;
     mapCardAddressElement.textContent = card.offer.address;
@@ -46,6 +47,14 @@
         i--;
       }
     }
+    for (i = 1; i < card.offer.photos.length; i++) {
+      mapCardPicturesElement.appendChild(mapCardPicturesElement.children[0].cloneNode(true));
+    }
+    card.offer.photos.forEach(function (photo, index) {
+      var imgElement = mapCardPicturesElement.children[index].querySelector('img');
+      imgElement.setAttribute('src', photo);
+      imgElement.setAttribute('style', 'width: 40px; height: 40px;');
+    });
     return mapCardElement;
   };
 

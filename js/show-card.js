@@ -4,8 +4,8 @@
   window.showCard = function (mapElement, posters) {
     var openPopup = function (mapPinElement) {
       var style = window.util.getProperties(mapPinElement.getAttribute('style'));
-      var condition1 = parseInt(style.left, 10) + window.pin.mapPin.PIN_WIDTH / 2;
-      var condition2 = parseInt(style.top, 10) + window.pin.mapPin.MAP_PIN_HEIGHT / 2 + window.pin.mapPin.PIN_HEIGHT;
+      var condition1 = parseInt(style.left, 10) + window.pin.MapPin.PIN_WIDTH / 2;
+      var condition2 = parseInt(style.top, 10) + window.pin.MapPin.MAP_PIN_HEIGHT / 2 + window.pin.MapPin.PIN_HEIGHT;
       for (var i = 0; i < posters.length; i++) {
         if (posters[i].location.x === condition1 && posters[i].location.y === condition2) {
           var cardFragment = window.util.getFragment(posters[i], window.card.renderMapCard);

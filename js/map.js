@@ -1,26 +1,37 @@
 'use strict';
 
 (function () {
-  var MAIN_PIN_Y_OFFSET = 16;
   var mapElement = document.querySelector('.map');
   var mapPinsListElement = mapElement.querySelector('.map__pins');
   var mapPinMainElement = mapElement.querySelector('.map__pin--main');
-  var addressInputElement = window.form.noticeFormElement.querySelector('#address');
   var noticeFormFieldsetElements = window.form.noticeFormElement.querySelectorAll('fieldset');
-  var posters;
-  var setAddress = function () {
-    var locationX = parseInt(getComputedStyle(mapPinMainElement).getPropertyValue('left'), 10);
-    var locationY = parseInt(getComputedStyle(mapPinMainElement).getPropertyValue('top'), 10) - MAIN_PIN_Y_OFFSET;
-    addressInputElement.value = 'x: ' + locationX + ', y: ' + locationY;
+  var posters = null;
+  var Coords = {
+    X_MIN_POINT: 0,
+    X_MAX_POINT: mapElement.clientWidth,
+    Y_MIN_POINT: 100,
+    Y_MAX_POINT: 500
   };
 
-  var activateMap = function () {
-    if (!posters) {
-      posters = window.data.getPosters(8);
+  var dataLoadHandler = function (data) {
+    posters = data;
+  };
+  var dataErrorHandler = function (error) {
+    window.util.showMessage(true, 'Ошибка отображения похожих объявлений', error, 3000);
+  };
+  var showPosters = function () {
+    if (posters) {
+      var mapPinsFragment = window.util.getFragment(posters, window.pin.renderMapPin);
+      mapPinsListElement.appendChild(mapPinsFragment);
+      window.showCard(mapElement, posters);
+    } else {
+      setTimeout(function () {
+        showPosters();
+      }, 1000);
     }
-    var mapPinsFragment = window.util.getFragment(posters, window.pin.renderMapPin);
-    mapPinsListElement.appendChild(mapPinsFragment);
-    window.showCard(mapElement, posters);
+  };
+  var activateMap = function () {
+    showPosters();
     mapElement.classList.remove('map--faded');
     window.form.noticeFormElement.classList.remove('notice__form--disabled');
     Array.prototype.forEach.call(noticeFormFieldsetElements, function (fieldset) {
@@ -53,37 +64,35 @@
         x: (mapPinMainElement.offsetLeft - shift.x),
         y: (mapPinMainElement.offsetTop - shift.y)
       };
-      if (pinCoords.y < window.data.Coords.Y_POINT_MIN + MAIN_PIN_Y_OFFSET) {
-        pinCoords.y = window.data.Coords.Y_POINT_MIN + MAIN_PIN_Y_OFFSET;
+      if (pinCoords.y < Coords.Y_MIN_POINT + window.pin.MapPin.MAIN_PIN_Y_OFFSET) {
+        pinCoords.y = Coords.Y_MIN_POINT + window.pin.MapPin.MAIN_PIN_Y_OFFSET;
       }
-      if (pinCoords.y > window.data.Coords.Y_POINT_MAX + MAIN_PIN_Y_OFFSET) {
-        pinCoords.y = window.data.Coords.Y_POINT_MAX + MAIN_PIN_Y_OFFSET;
+      if (pinCoords.y > Coords.Y_MAX_POINT + window.pin.MapPin.MAIN_PIN_Y_OFFSET) {
+        pinCoords.y = Coords.Y_MAX_POINT + window.pin.MapPin.MAIN_PIN_Y_OFFSET;
       }
-      if (pinCoords.x < window.data.Coords.X_POINT_MIN) {
-        pinCoords.x = window.data.Coords.X_POINT_MIN;
+      if (pinCoords.x < Coords.X_MIN_POINT) {
+        pinCoords.x = Coords.X_MIN_POINT;
       }
-      if (pinCoords.x > window.data.Coords.X_POINT_MAX) {
-        pinCoords.x = window.data.Coords.X_POINT_MAX;
+      if (pinCoords.x > Coords.X_MAX_POINT) {
+        pinCoords.x = Coords.X_MAX_POINT;
       }
 
       mapPinMainElement.style.top = pinCoords.y + 'px';
       mapPinMainElement.style.left = pinCoords.x + 'px';
-      setAddress();
+      window.form.setAddress();
     };
     var mouseUpHandler = function (upEvt) {
       upEvt.preventDefault();
       activateMap();
-      document.removeEventListener('mousemove', mouseMoveHandler);
-      document.removeEventListener('mouseup', mouseUpHandler);
+      window.util.setListeners(document, 'remove', ['mousemove', 'mouseup'], [mouseMoveHandler, mouseUpHandler]);
     };
 
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
+    window.util.setListeners(document, 'add', ['mousemove', 'mouseup'], [mouseMoveHandler, mouseUpHandler]);
   };
-
   mapPinMainElement.addEventListener('mousedown', mouseDownHandler);
-  setAddress();
+  window.form.setAddress();
   Array.prototype.forEach.call(noticeFormFieldsetElements, function (fieldset) {
     fieldset.disabled = true;
   });
+  window.backend.load(dataLoadHandler, dataErrorHandler);
 })();
