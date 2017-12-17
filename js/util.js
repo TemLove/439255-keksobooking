@@ -3,31 +3,6 @@
 (function () {
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
-  var getRandomNumber = function (max, min) {
-    min = min || 0;
-    return Math.floor(Math.random() * (max - min) + min);
-  };
-
-  var getRandomElement = function (arr) {
-    return arr[getRandomNumber(arr.length)];
-  };
-
-  var getUniqueRandomElement = function (arr) {
-    return arr.splice(getRandomNumber(arr.length), 1).join('');
-  };
-
-  var getRandomizedArray = function (source, length) {
-    length = length || source.length;
-    var arr = source.slice();
-    var result = [];
-    while (length-- > 0) {
-      if (!arr.length) {
-        arr = source.slice();
-      }
-      result.push(getUniqueRandomElement(arr));
-    }
-    return result;
-  };
 
   var getFragment = function (data, renderMethod) {
     data = Array.isArray(data) ? data : [data];
@@ -105,13 +80,25 @@
       }
     }
   };
+  var showMessage = function (isError, title, text, time) {
+    var mainElement = document.querySelector('main');
+    var messageElement = document.querySelector('template').content.querySelector('.message');
+    var message = messageElement.cloneNode(true);
+    var messageTitle = message.querySelector('.message__title');
+    var messageText = message.querySelector('.message__text');
+    if (isError) {
+      message.classList.add('message--error');
+    }
+    messageTitle.textContent = title;
+    messageText.textContent = text;
+    mainElement.appendChild(message);
+    setTimeout(function () {
+      mainElement.removeChild(message);
+    }, time);
+  };
   window.util = {
     ESC_KEYCODE: ESC_KEYCODE,
     ENTER_KEYCODE: ENTER_KEYCODE,
-    getRandomNumber: getRandomNumber,
-    getRandomElement: getRandomElement,
-    getUniqueRandomElement: getUniqueRandomElement,
-    getRandomizedArray: getRandomizedArray,
     getFragment: getFragment,
     setListeners: setListeners,
     getClickHandler: getClickHandler,
@@ -120,6 +107,7 @@
     findSelectedOption: findSelectedOption,
     syncValues: syncValues,
     syncValueWithMin: syncValueWithMin,
-    syncMultipleValues: syncMultipleValues
+    syncMultipleValues: syncMultipleValues,
+    showMessage: showMessage
   };
 })();
