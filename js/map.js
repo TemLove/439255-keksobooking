@@ -4,6 +4,7 @@
   var mapElement = document.querySelector('.map');
   var mapPinsListElement = mapElement.querySelector('.map__pins');
   var mapPinMainElement = mapElement.querySelector('.map__pin--main');
+  var mapFiltersElement = mapElement.querySelector('.map__filters');
   var noticeFormFieldsetElements = window.form.noticeFormElement.querySelectorAll('fieldset');
   var posters = null;
   var Coords = {
@@ -19,9 +20,16 @@
   var dataErrorHandler = function (error) {
     window.util.showMessage(true, 'Ошибка отображения похожих объявлений', error, 3000);
   };
+  var removePosters = function () {
+    var pinElements = mapElement.querySelectorAll('.map__pin:not(.map__pin--main)');
+    Array.prototype.forEach.call(pinElements, function (pin) {
+      mapPinsListElement.removeChild(pin);
+    });
+  };
   var showPosters = function () {
     if (posters) {
-      var mapPinsFragment = window.util.getFragment(posters, window.pin.renderMapPin);
+      var postersToDisplay = window.filterData(posters).slice(0, 5);
+      var mapPinsFragment = window.util.getFragment(postersToDisplay, window.pin.renderMapPin);
       mapPinsListElement.appendChild(mapPinsFragment);
       window.showCard(mapElement, posters);
     } else {
@@ -30,15 +38,22 @@
       }, 1000);
     }
   };
+  var reShowPosters = function () {
+    removePosters();
+    showPosters();
+  };
+  var filtersChangeHandler = function () {
+    window.debounce(reShowPosters);
+  };
   var activateMap = function () {
     showPosters();
+    mapFiltersElement.addEventListener('change', filtersChangeHandler);
     mapElement.classList.remove('map--faded');
     window.form.noticeFormElement.classList.remove('notice__form--disabled');
     Array.prototype.forEach.call(noticeFormFieldsetElements, function (fieldset) {
       fieldset.disabled = false;
     });
   };
-
   var mouseDownHandler = function (evt) {
     evt.preventDefault();
 
