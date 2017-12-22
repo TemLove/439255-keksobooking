@@ -5,7 +5,7 @@
     var openPopup = function (mapPinElement) {
       var style = window.util.getProperties(mapPinElement.getAttribute('style'));
       var condition1 = parseInt(style.left, 10) + window.pin.MapPin.PIN_WIDTH / 2;
-      var condition2 = parseInt(style.top, 10) + window.pin.MapPin.MAP_PIN_HEIGHT / 2 + window.pin.MapPin.PIN_HEIGHT;
+      var condition2 = parseInt(style.top, 10) + window.pin.MapPin.PIN_HEIGHT;
       for (var i = 0; i < posters.length; i++) {
         if (posters[i].location.x === condition1 && posters[i].location.y === condition2) {
           var cardFragment = window.util.getFragment(posters[i], window.card.renderMapCard);
@@ -39,12 +39,6 @@
       var mapPinActiveElement = mapElement.querySelector('.map__pin--active');
       var popup = mapElement.querySelector('.popup');
       var target = null;
-      if (mapPinActiveElement) {
-        mapPinActiveElement.classList.remove('map__pin--active');
-      }
-      if (popup) {
-        mapElement.removeChild(popup);
-      }
       if (evt.target.className === 'map__pin') {
         target = evt.target;
       }
@@ -52,6 +46,12 @@
         target = evt.target.parentElement;
       }
       if (target) {
+        if (mapPinActiveElement) {
+          mapPinActiveElement.classList.remove('map__pin--active');
+        }
+        if (popup) {
+          mapElement.removeChild(popup);
+        }
         target.classList.add('map__pin--active');
         openPopup(target);
       }
