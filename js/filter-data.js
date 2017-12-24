@@ -19,9 +19,9 @@
   var isGuestsFit = filterByValue('guests', guestsFilterElement);
   var isPriceFit = function (data) {
     var condition = {
-      high: data.offer.price >= 5e4,
-      middle: data.offer.price >= 1e4 && data.offer.price < 5e4,
-      low: data.offer.price < 1e4
+      high: data.offer.price >= 50000,
+      middle: data.offer.price >= 10000 && data.offer.price < 50000,
+      low: data.offer.price < 10000
     };
     return priceFilterElement.value === 'any' ? true : condition[priceFilterElement.value];
   };
