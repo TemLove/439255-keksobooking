@@ -42,7 +42,7 @@
       if (evt.target.className === 'map__pin') {
         target = evt.target;
       }
-      if (evt.target.parentElement.className === 'map__pin') {
+      if (Array.prototype.indexOf.call(evt.target.parentElement.classList, 'map__pin') >= 0) {
         target = evt.target.parentElement;
       }
       if (target) {

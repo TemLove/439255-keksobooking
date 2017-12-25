@@ -4,7 +4,7 @@
   var APARTMENT_TYPE_TO_DISPLAY = {
     flat: 'Квартира',
     house: 'Дом',
-    bungalo: 'Бунгало'
+    bungalo: 'Лачуга'
   };
   var getRoomsAndGuestsString = function (roomsValue, guestsValue) {
     var roomsStr;

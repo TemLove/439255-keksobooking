@@ -47,16 +47,6 @@
     });
     return result;
   };
-  var findSelectedOption = function (select) {
-    var selectedOption = null;
-    for (var i = 0; i < select.options.length; i++) {
-      if (select.options[i].selected) {
-        selectedOption = select.options[i];
-        break;
-      }
-    }
-    return selectedOption;
-  };
   var syncValues = function (element, value) {
     element.value = value;
   };
@@ -66,19 +56,14 @@
   };
   var syncMultipleValues = function (element, values) {
     var options = Array.prototype.slice.call(element.options, 0);
+    var firstEnableOption = null;
     options.forEach(function (option) {
-      if (values.indexOf(option.value) >= 0) {
-        option.disabled = false;
-      } else {
-        option.disabled = true;
+      option.disabled = values.indexOf(option.value) < 0;
+      if (!firstEnableOption && !option.disabled) {
+        firstEnableOption = option;
+        firstEnableOption.selected = true;
       }
     });
-    for (var i = 0; i < options.length; i++) {
-      if (values.indexOf(options[i].value) >= 0) {
-        options[i].selected = true;
-        break;
-      }
-    }
   };
   var showMessage = function (isError, title, text, time) {
     var mainElement = document.querySelector('main');
@@ -104,7 +89,6 @@
     getClickHandler: getClickHandler,
     getKeydownHandler: getKeydownHandler,
     getProperties: getProperties,
-    findSelectedOption: findSelectedOption,
     syncValues: syncValues,
     syncValueWithMin: syncValueWithMin,
     syncMultipleValues: syncMultipleValues,
