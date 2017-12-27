@@ -7,6 +7,8 @@
   var priceFilterElement = mapFiltersElement.querySelector('#housing-price');
   var roomsFilterElement = mapFiltersElement.querySelector('#housing-rooms');
   var guestsFilterElement = mapFiltersElement.querySelector('#housing-guests');
+  var MIDDLE_PRICE_LEVEL = 10000;
+  var HIGH_PRICE_LEVEL = 50000;
 
   var filterByValue = function (field, filterElement) {
     return function (data) {
@@ -14,17 +16,20 @@
       return filterElement.value === 'any' ? true : condition;
     };
   };
+
   var isTypeFit = filterByValue('type', typeFilterElement);
   var isRoomsFit = filterByValue('rooms', roomsFilterElement);
   var isGuestsFit = filterByValue('guests', guestsFilterElement);
+
   var isPriceFit = function (data) {
     var condition = {
-      high: data.offer.price >= 50000,
-      middle: data.offer.price >= 10000 && data.offer.price < 50000,
-      low: data.offer.price < 10000
+      high: data.offer.price >= HIGH_PRICE_LEVEL,
+      middle: data.offer.price >= MIDDLE_PRICE_LEVEL && data.offer.price < HIGH_PRICE_LEVEL,
+      low: data.offer.price < MIDDLE_PRICE_LEVEL
     };
     return priceFilterElement.value === 'any' ? true : condition[priceFilterElement.value];
   };
+
   var isFeaturesFit = function (data) {
     var checkedFeatures = Array.prototype.slice.call(featuresFilterElements, 0).filter(function (feature) {
       return feature.checked;

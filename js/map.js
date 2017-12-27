@@ -1,33 +1,36 @@
 'use strict';
 
 (function () {
+  var COORDS = {
+    X_MIN_POINT: 0,
+    X_MAX_POINT: window.element.map.clientWidth,
+    Y_MIN_POINT: 100 + window.pin.MAP_PIN.MAIN_PIN_Y_OFFSET,
+    Y_MAX_POINT: 500 + window.pin.MAP_PIN.MAIN_PIN_Y_OFFSET
+  };
+  var MESSAGE_ERROR_TITLE = 'Ошибка отображения похожих объявлений';
+  var MESSAGE_SHOW_TIME = 3000;
+  var LOAD_TIMEOUT = 1000;
+
   var mapPinsListElement = window.element.map.querySelector('.map__pins');
   var mapFiltersElement = window.element.map.querySelector('.map__filters');
   var noticeFormFieldsetElements = window.element.noticeForm.querySelectorAll('fieldset');
-  var posters = null;
-  var Coords = {
-    X_MIN_POINT: 0,
-    X_MAX_POINT: window.element.map.clientWidth,
-    Y_MIN_POINT: 100,
-    Y_MAX_POINT: 500
-  };
-  var Message = {
-    errorTitle: 'Ошибка отображения похожих объявлений',
-    showTime: 3000
-  };
 
+  var posters = null;
   var dataLoadHandler = function (data) {
     posters = data;
   };
+
   var dataErrorHandler = function (error) {
-    window.util.showMessage(true, Message.errorTitle, error, Message.showTime);
+    window.util.showMessage(true, MESSAGE_ERROR_TITLE, error, MESSAGE_SHOW_TIME);
   };
+
   var removePosters = function () {
     var pinElements = window.element.map.querySelectorAll('.map__pin:not(.map__pin--main)');
     Array.prototype.forEach.call(pinElements, function (pin) {
       mapPinsListElement.removeChild(pin);
     });
   };
+
   var showPosters = function () {
     if (posters) {
       var postersToDisplay = window.filterData(posters).slice(0, 5);
@@ -37,16 +40,19 @@
     } else {
       setTimeout(function () {
         showPosters();
-      }, 1000);
+      }, LOAD_TIMEOUT);
     }
   };
+
   var reShowPosters = function () {
     removePosters();
     showPosters();
   };
+
   var filtersChangeHandler = function () {
     window.debounce(reShowPosters);
   };
+
   var activateMap = function () {
     showPosters();
     mapFiltersElement.addEventListener('change', filtersChangeHandler);
@@ -56,6 +62,7 @@
       fieldset.disabled = false;
     });
   };
+
   var mouseDownHandler = function (evt) {
     evt.preventDefault();
 
@@ -81,18 +88,8 @@
         x: (window.element.mapPinMain.offsetLeft - shift.x),
         y: (window.element.mapPinMain.offsetTop - shift.y)
       };
-      if (pinCoords.y < Coords.Y_MIN_POINT + window.pin.MapPin.MAIN_PIN_Y_OFFSET) {
-        pinCoords.y = Coords.Y_MIN_POINT + window.pin.MapPin.MAIN_PIN_Y_OFFSET;
-      }
-      if (pinCoords.y > Coords.Y_MAX_POINT + window.pin.MapPin.MAIN_PIN_Y_OFFSET) {
-        pinCoords.y = Coords.Y_MAX_POINT + window.pin.MapPin.MAIN_PIN_Y_OFFSET;
-      }
-      if (pinCoords.x < Coords.X_MIN_POINT) {
-        pinCoords.x = Coords.X_MIN_POINT;
-      }
-      if (pinCoords.x > Coords.X_MAX_POINT) {
-        pinCoords.x = Coords.X_MAX_POINT;
-      }
+      pinCoords.x = Math.max(COORDS.X_MIN_POINT, Math.min(pinCoords.x, COORDS.X_MAX_POINT));
+      pinCoords.y = Math.max(COORDS.Y_MIN_POINT, Math.min(pinCoords.y, COORDS.Y_MAX_POINT));
 
       window.element.mapPinMain.style.top = pinCoords.y + 'px';
       window.element.mapPinMain.style.left = pinCoords.x + 'px';
@@ -106,8 +103,10 @@
 
     window.util.setListeners(document, 'add', ['mousemove', 'mouseup'], [mouseMoveHandler, mouseUpHandler]);
   };
+
   window.element.mapPinMain.addEventListener('mousedown', mouseDownHandler);
   window.form.setAddress();
+
   Array.prototype.forEach.call(noticeFormFieldsetElements, function (fieldset) {
     fieldset.disabled = true;
   });
